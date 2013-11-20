@@ -1,0 +1,38 @@
+{
+  "name": "react-app-middleware",
+  "version": "0.0.0",
+  "description": "Connect/Express middleware for react-app",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha -R spec specs/*.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "andreypopp/react-app-middleware"
+  },
+  "keywords": [
+    "react-app",
+    "middleware",
+    "connect",
+    "express",
+    "server-side-rendering",
+    "react"
+  ],
+  "author": "Andrey Popp <8mayday@gmail.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "semver": "~2.2.1",
+    "supertest": "~0.8.1",
+    "mocha": "~1.14.0",
+    "jshint": "~2.3.0",
+    "express": "~3.4.4",
+    "react-tools": "~0.5.1"
+  },
+  "dependencies": {
+    "react-app-server-runtime": "git://github.com/andreypopp/react-app-server-runtime",
+    "react-app-controller": "git://github.com/andreypopp/react-app-controller",
+    "react-app-bundler": "git://github.com/andreypopp/react-app-bundler",
+    "lodash": "~2.3.0",
+    "kew": "~0.3.0"
+  }
+}
