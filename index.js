@@ -4,7 +4,6 @@ var url         = require('url');
 var utils       = require('lodash');
 var kew         = require('kew');
 var evaluate    = require('react-app-server-runtime');
-var controller  = require('react-app-controller');
 var request     = require('react-app-controller/request');
 var bundler     = require('react-app-bundler');
 var createPage  = require('./create-page');
@@ -19,7 +18,7 @@ function compile(func) {
 var renderComponent = compile(function(data) {
   window.onload = function() {
     var controller = require('./app');
-    controller.render(document.body);
+    controller.render(document.body, {data: data});
   }
 });
 
@@ -80,7 +79,7 @@ function serveRenderedPage(bundle, opts) {
         res.write(createPage({
           body: rendered.markup,
           title: rendered.title,
-          code: renderComponent(rendered.data),
+          code: renderComponent(rendered.request.data),
           meta: opts.meta,
           script: opts.script,
           link: opts.link
