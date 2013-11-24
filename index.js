@@ -5,6 +5,7 @@ var utils       = require('lodash');
 var kew         = require('kew');
 var evaluate    = require('react-app-server-runtime');
 var controller  = require('react-app-controller');
+var request     = require('react-app-controller/request');
 var bundler     = require('react-app-bundler');
 var createPage  = require('./create-page');
 
@@ -18,13 +19,13 @@ function compile(func) {
 var renderComponent = compile(function(data) {
   window.onload = function() {
     var controller = require('./app');
-    controller.start(data);
+    controller.render(document.body);
   }
 });
 
 var renderComponentToString = compile(function(request) {
   var controller = require('./app');
-  controller.generateMarkup(request, __callback);
+  controller.renderToString(request, __callback);
 });
 
 function evaluatePromise() {
@@ -65,12 +66,12 @@ function serveRenderedPage(bundle, opts) {
 
   return function(req, res, next) {
     var location = makeLocation(req, opts.origin);
-    var request = controller.createRequestFromLocation(location);
+    var clientReq = request.createRequestFromLocation(location);
     bundle()
       .then(function(bundle) {
         return evaluatePromise({
           bundle: bundle,
-          code: renderComponentToString(request),
+          code: renderComponentToString(clientReq),
           debug: opts.debug
         });
       })

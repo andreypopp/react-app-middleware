@@ -29,16 +29,24 @@ var AboutPage = React.createClass({
   }
 });
 
-var app = module.exports = createController({
-  '/': MainPage,
-  '/about': AboutPage
-}, {
-  started: function() {
-    window.addEventListener('click', function(e) {
-      if (e.target.tagName === 'A' && e.target.attributes.href) {
-        e.preventDefault();
-        app.navigate(e.target.attributes.href.value);
-      }
-    });
+module.exports = createController({
+  routes: {
+    '/': MainPage,
+    '/about': AboutPage
+  },
+
+  onClick: function(e) {
+    if (e.target.tagName === 'A' && e.target.attributes.href) {
+      e.preventDefault();
+      this.navigate(e.target.attributes.href.value);
+    }
+  },
+
+  componentDidMount: function() {
+    window.addEventListener('click', this.onClick);
+  },
+
+  componentWillUnmount: function() {
+    window.removeEventListener('click', this.onClick);
   }
 });
