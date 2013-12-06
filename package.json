@@ -26,7 +26,7 @@
     "mocha": "~1.14.0",
     "jshint": "~2.3.0",
     "express": "~3.4.4",
-    "react-tools": "~0.5.1"
+    "react": "http://petehunt.net/react/react-0.5.1.tar.gz"
   },
   "dependencies": {
     "react-app-server-runtime": "git://github.com/andreypopp/react-app-server-runtime",
