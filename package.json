@@ -1,6 +1,6 @@
 {
   "name": "react-app-middleware",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Connect/Express middleware for react-app",
   "main": "index.js",
   "scripts": {
