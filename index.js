@@ -24,7 +24,13 @@ var renderComponent = compile(function(data) {
 
 var renderComponentToString = compile(function(request) {
   var controller = require('./app');
-  controller.renderToString(request, __callback);
+  controller.renderToString(request, function(err, rendered) {
+    if (err) {
+      return __callback(err);
+    }
+    rendered.isNotFoundErrorHandled = rendered.controller.state.page === null;
+    __callback(null, rendered);
+  });
 });
 
 function evaluatePromise() {
@@ -76,6 +82,7 @@ function serveRenderedPage(bundle, opts) {
       })
       .then(function(rendered) {
         res.setHeader('Content-type', 'text/html');
+        res.statusCode = rendered.isNotFoundErrorHandled ? 404 : 200;
         res.write(createPage({
           body: rendered.markup,
           title: rendered.title,
