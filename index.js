@@ -66,8 +66,9 @@ function servePage(opts) {
 function serveRenderedPage(bundle, opts) {
   opts = opts || {};
 
-  if (utils.isString(bundle))
+  if (typeof bundle !== 'function') {
     bundle = bundler.create(bundle, opts);
+  }
 
   return function(req, res, next) {
     var location = makeLocation(req, opts.origin);
