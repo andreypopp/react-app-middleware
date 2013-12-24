@@ -35,6 +35,7 @@ var renderComponentToString = compile(function(request) {
     }
     // page is null but we didn't get error - NotFoundError was handled by a
     // controller
+    // TODO: move that check to controller interface
     rendered.isNotFoundErrorHandled = rendered.controller.state.page === null;
     __callback(null, rendered);
   });
