@@ -1,5 +1,10 @@
 "use strict";
 
+/**
+ * Create HTML element attributes from a =n object
+ *
+ * @param {Object} attrs
+ */
 function createAttrs(attrs) {
   var buf = [];
   for (var k in attrs) {
@@ -8,6 +13,11 @@ function createAttrs(attrs) {
   return buf.join(' ');
 }
 
+/**
+ * Create HTML document from specification
+ *
+ * @param {Object} spec
+ */
 function createPage(spec) {
   var buf = ['<!doctype html>', '<html>', '<head>'];
 
