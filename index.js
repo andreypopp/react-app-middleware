@@ -8,6 +8,11 @@ var request     = require('react-app-controller/request');
 var bundler     = require('react-app-bundler');
 var createPage  = require('./create-page');
 
+/**
+ * Compile function to execute in other runtimes (vm module, browser).
+ *
+ * @param {Function} func function to compile, this cannot be a closure
+ */
 function compile(func) {
   return function() {
     return '(' + func.toString() + ')(' +
@@ -28,11 +33,16 @@ var renderComponentToString = compile(function(request) {
     if (err) {
       return __callback(err);
     }
+    // page is null but we didn't get error - NotFoundError was handled by a
+    // controller
     rendered.isNotFoundErrorHandled = rendered.controller.state.page === null;
     __callback(null, rendered);
   });
 });
 
+/**
+ * Like evaluate from react-app-server-runtime but exposes Promise API
+ */
 function evaluatePromise() {
   var promise = kew.defer();
   var args = utils.toArray(arguments);
@@ -42,12 +52,23 @@ function evaluatePromise() {
   return promise;
 }
 
+/**
+ * Create window.location-like object from express request
+ *
+ * @param {ExpressRequest} req
+ * @param {String} origin
+ */
 function makeLocation(req, origin) {
   var protocol = !!req.connection.verifyPeer ? 'https://' : 'http://',
       reqOrigin = origin || (protocol + req.headers.host);
   return url.parse(reqOrigin + req.originalUrl);
 }
 
+/**
+ * Middleware for serving wrapper page for React UI
+ *
+ * @param {Options} opts
+ */
 function servePage(opts) {
   opts = opts || {};
 
@@ -63,6 +84,12 @@ function servePage(opts) {
   }
 }
 
+/**
+ * Middleware for serving pre-rendered React UI
+ *
+ * @param {Bundler|Browserify|ModuleId} bundle
+ * @param {Options} opts
+ */
 function serveRenderedPage(bundle, opts) {
   opts = opts || {};
 
