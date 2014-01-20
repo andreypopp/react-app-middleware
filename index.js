@@ -106,7 +106,8 @@ function serveRenderedPage(bundle, opts) {
         return evaluatePromise({
           bundle: bundle,
           code: renderComponentToString(clientReq),
-          debug: opts.debug
+          debug: opts.debug,
+          location: location
         });
       })
       .then(function(rendered) {
