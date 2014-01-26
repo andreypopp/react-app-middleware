@@ -6,7 +6,6 @@ var kew         = require('kew');
 var evaluate    = require('react-app-server-runtime');
 var request     = require('react-app-controller/request');
 var bundler     = require('react-app-bundler');
-var createPage  = require('./create-page');
 
 /**
  * Compile function to execute in other runtimes (vm module, browser).
@@ -23,7 +22,7 @@ function compile(func) {
 var renderComponent = compile(function(data) {
   window.onload = function() {
     var controller = require('./app');
-    controller.render(document.body, {data: data});
+    controller.render(document, {data: data});
   }
 });
 
@@ -66,32 +65,12 @@ function makeLocation(req, origin) {
 }
 
 /**
- * Middleware for serving wrapper page for React UI
- *
- * @param {Options} opts
- */
-function servePage(opts) {
-  opts = opts || {};
-
-  return function(req, res, next) {
-    res.setHeader('Content-type', 'text/html');
-    res.write(createPage({
-      code: renderComponent(),
-      meta: opts.meta,
-      script: opts.script,
-      link: opts.link
-    }));
-    res.end();
-  }
-}
-
-/**
  * Middleware for serving pre-rendered React UI
  *
  * @param {Bundler|Browserify|ModuleId} bundle
  * @param {Options} opts
  */
-function serveRenderedPage(bundle, opts) {
+function servePage(bundle, opts) {
   opts = opts || {};
 
   if (typeof bundle !== 'function') {
@@ -111,16 +90,14 @@ function serveRenderedPage(bundle, opts) {
         });
       })
       .then(function(rendered) {
+        var init = renderComponent(rendered.request.data);
+        var markup = rendered.markup.replace(
+          '</head>',
+          '<script>' + init + '</script>'
+        );
         res.setHeader('Content-type', 'text/html');
         res.statusCode = rendered.isNotFoundErrorHandled ? 404 : 200;
-        res.write(createPage({
-          body: rendered.markup,
-          title: rendered.title,
-          code: renderComponent(rendered.request.data),
-          meta: opts.meta,
-          script: opts.script,
-          link: opts.link
-        }));
+        res.write(markup);
         res.end();
       }, function(err) {
         err.isNotFoundError ? res.send(404) : next(err);
@@ -129,5 +106,3 @@ function serveRenderedPage(bundle, opts) {
 }
 
 module.exports = servePage;
-module.exports.servePage = servePage;
-module.exports.serveRenderedPage = serveRenderedPage;

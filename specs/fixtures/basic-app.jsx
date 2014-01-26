@@ -35,6 +35,18 @@ module.exports = createController({
     '/about': AboutPage
   },
 
+  render: function() {
+    return (
+      <html>
+        <head>
+        </head>
+        <body>
+          {this.state.page}
+        </body>
+      </html>
+    );
+  },
+
   onClick: function(e) {
     if (e.target.tagName === 'A' && e.target.attributes.href) {
       e.preventDefault();
