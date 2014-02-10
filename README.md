@@ -1,5 +1,8 @@
 # react-app-middleware
 
+**DEPRECATION WARNING:** This is not maintained anymore, please use
+[react-quickstart](https://github.com/andreypopp/react-quickstart) instead.
+
 Connext/Express server middleware to serve pre-rendered React apps.
 
 ## Installation
