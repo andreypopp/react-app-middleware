@@ -6,6 +6,12 @@ var kew         = require('kew');
 var evaluate    = require('react-app-server-runtime');
 var request     = require('react-app-controller/request');
 var bundler     = require('react-app-bundler');
+var fs          = require('fs');
+
+function wrapLayout(layout, markup) {
+  if (!layout) return markup;
+  return layout.replace('{{yield}}', markup);
+}
 
 /**
  * Compile function to execute in other runtimes (vm module, browser).
@@ -15,14 +21,19 @@ var bundler     = require('react-app-bundler');
 function compile(func) {
   return function() {
     return '(' + func.toString() + ')(' +
-      utils.map(arguments, JSON.stringify).join(', ') + ');';
+      utils.map(arguments, function(el) {
+        return JSON.stringify(el) || 'null'
+      }).join(', ') + ');';
   }
 }
 
-var renderComponent = compile(function(data) {
+var renderComponent = compile(function(data, root) {
   window.onload = function() {
     var controller = require('./app');
-    controller.render(document, {data: data});
+    controller.render(document.querySelector(root) || document, {
+      root: root,
+      data: data
+    });
   }
 });
 
@@ -90,11 +101,9 @@ function servePage(bundle, opts) {
         });
       })
       .then(function(rendered) {
-        var init = renderComponent(rendered.request.data);
-        var markup = rendered.markup.replace(
-          '</head>',
-          '<script>' + init + '</script>'
-        );
+        var init = renderComponent(rendered.request.data, opts.root);
+        var markup = wrapLayout(opts.layout, rendered.markup);
+        markup = markup.replace('</body>', '<script>'+init+'</script></body>');
         res.setHeader('Content-type', 'text/html');
         res.statusCode = rendered.isNotFoundErrorHandled ? 404 : 200;
         res.write(markup);
